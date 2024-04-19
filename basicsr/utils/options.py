@@ -121,11 +121,11 @@ def parse_options(root_path, auto_resume = False, is_train=True):
     parser.add_argument('-opt', type=str, default='options/train/train_gcfsr.yml' help='Path to option YAML file.')
     parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none', help='job launcher')
     if auto_resume:
-        parser.add_argument('--auto_resume', action='store_true')
+        parser.add_argument('--auto_resume', default = True, action='store_true')
     else:
-        parser.add_argument('--auto_resume', action='store_false')
+        parser.add_argument('--auto_resume', default = False, action='store_false')
     
-    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--debug', default = True, action='store_true')
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     opt = parse(args.opt, root_path, is_train=is_train, debug=args.debug)
