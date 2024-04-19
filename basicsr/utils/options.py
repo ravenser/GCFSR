@@ -118,7 +118,7 @@ def dict2str(opt, indent_level=1):
 
 def parse_options(root_path, auto_resume = False, is_train=True):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-opt', type=str, default='options/train/train_gcfsr.yml' help='Path to option YAML file.')
+    parser.add_argument('-opt', type=str, default='options/train/train_gcfsr.yml', help='Path to option YAML file.')
     parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none', help='job launcher')
     if auto_resume:
         parser.add_argument('--auto_resume', default = True, action='store_true')
