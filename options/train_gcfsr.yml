@@ -27,19 +27,19 @@ datasets:
     dataset_enlarge_ratio: 100
     prefetch_mode: ~
 
-  #val:
+  val:
     # Please modify accordingly to use your own validation
     # Or comment the val block if do not need validation during training
-  #  name: validation
-  #  type: SingleImage_GT_Dataset
-  #  dataroot_lq: /kaggle/input/celeba-512-1000-val/celebaHQ_512_1000
-  #  out_size: 512
-  #  io_backend:
-  #    type: disk
-  #  cond_norm: 16.
-  #  mean: [0.5, 0.5, 0.5]
-  #  std: [0.5, 0.5, 0.5]
-  #  scale: 1
+    name: validation
+    type: SingleImage_GT_Dataset
+    dataroot_lq: /kaggle/input/celeba-512-1000-val/celebaHQ_512_1000
+    out_size: 512
+    io_backend:
+      type: disk
+    cond_norm: 16.
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+    scale: 1
 
 # network structures
 network_g:
@@ -116,10 +116,10 @@ train:
   net_d_init_iters: 0
 
 # validation settings
-#val:
-#  val_freq: !!float 5e3
-#  save_img: true
-#  num_val_samples: 3
+val:
+  val_freq: !!float 5e3
+  save_img: true
+  num_val_samples: 3
 
 # logging settings
 logger:
