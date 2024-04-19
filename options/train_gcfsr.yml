@@ -117,14 +117,14 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 5e3
+  val_freq: float 5e3
   save_img: true
   num_val_samples: 3
 
 # logging settings
 logger:
   print_freq: 100
-  save_checkpoint_freq: !!float 5e3
+  save_checkpoint_freq: float 5e3
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512
