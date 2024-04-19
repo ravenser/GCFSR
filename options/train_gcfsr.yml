@@ -116,10 +116,10 @@ train:
   net_d_init_iters: 0
 
 # validation settings
-val:
-  val_freq: !!float 5e3
-  save_img: true
-  num_val_samples: 3
+#val:
+#  val_freq: !!float 5e3
+#  save_img: true
+#  num_val_samples: 3
 
 # logging settings
 logger:
