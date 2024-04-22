@@ -308,7 +308,7 @@ class EmbeddingLoss(nn.Module):
             if self.criterion_type == 'fro':
                 embed_loss += torch.norm(x_embedding - gt_embedding, p='fro').detach()
             else:
-                embed_loss += self.criterion(x_embedding, gt_embedding)
+                embed_loss += self.criterion(x_embedding, gt_embedding).detach()
             embed_loss *= self.embedding_weight
         else:
             embed_loss = None
