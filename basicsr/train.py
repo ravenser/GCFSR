@@ -95,8 +95,7 @@ def train_pipeline(root_path):
 
     torch.backends.cudnn.benchmark = True
     # torch.backends.cudnn.deterministic = True
-    # initialize wandb and tb loggers
-    tb_logger, run = init_tb_loggers(opt)
+
     # load resume states if necessary
     resume_state = load_resume_state(opt)
     # mkdir for experiments and logger
@@ -111,7 +110,8 @@ def train_pipeline(root_path):
     logger = get_root_logger(logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
     logger.info(get_env_info())
     logger.info(dict2str(opt))
-
+    # initialize wandb and tb loggers
+    tb_logger, run = init_tb_loggers(opt)
     # create train and validation dataloaders
     result = create_train_val_dataloader(opt, logger)
     train_loader, train_sampler, val_loader, total_epochs, total_iters = result

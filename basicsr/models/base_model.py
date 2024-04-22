@@ -203,22 +203,12 @@ class BaseModel():
         while retry > 0:
             try:
                 torch.save(save_dict, save_path)
+                artifact = wandb.Artifact(save_filename, type='model')
+                artifact.add_file(save_path)
+                wandb.log_artifact(artifact)
             except Exception as e:
                 logger = get_root_logger()
                 logger.warn(f'Save model error: {e}, remaining retry times: {retry - 1}')
-                time.sleep(1)
-            else:
-                break
-            finally:
-                retry -= 1
-            try:
-                print('Save model????????????')
-                artifact = wandb.Artifact(save_filename, type='model')
-                artifact.add_file(save_path)
-                run.log_artifact(artifact)
-            except Exception as e:
-                logger = get_root_logger()
-                logger.warn(f'Save artifact model error: {e}, remaining retry times: {retry - 1}')
                 time.sleep(1)
             else:
                 break
@@ -314,21 +304,12 @@ class BaseModel():
             while retry > 0:
                 try:
                     torch.save(state, save_path)
+                    artifact = wandb.Artifact(save_filename, type='state')
+                    artifact.add_file(save_path)
+                    wandb.log_artifact(artifact)
                 except Exception as e:
                     logger = get_root_logger()
                     logger.warn(f'Save training state error: {e}, remaining retry times: {retry - 1}')
-                    time.sleep(1)
-                else:
-                    break
-                finally:
-                    retry -= 1
-                try:
-                    artifact = wandb.Artifact(save_filename, type='state')
-                    artifact.add_file(save_path)
-                    run.log_artifact(artifact)
-                except Exception as e:
-                    logger = get_root_logger()
-                    logger.warn(f'Save wandb training state error: {e}, remaining retry times: {retry - 1}')
                     time.sleep(1)
                 else:
                     break
