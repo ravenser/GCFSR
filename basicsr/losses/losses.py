@@ -262,12 +262,12 @@ class EmbeddingLoss(nn.Module):
     """Embedding loss.
 
     Args:
-        Pretrained (str): The type of vgg network used as feature extractor.
+        Pretrained (str): The type of network used as feature extractor.
             Default: 'vgg19'.
         embedding_weight (float): If `embedding_weight > 0`, the embedding
             loss will be calculated and the loss will multiplied by the
             weight. Default: 1.0.
-        criterion (str): Criterion used for perceptual loss. Default: 'l1'.
+        criterion (str): Criterion used for embedding loss. Default: 'l1'.
     """
 
     def __init__(self,
@@ -298,15 +298,15 @@ class EmbeddingLoss(nn.Module):
         Returns:
             Tensor: Forward results.
         """
-        # extract vgg features
+        # extract face embaddings
         x_embedding = self.resnet(x)
         gt_embedding = self.resnet(gt.detach())
 
-        # calculate perceptual loss
+        # calculate embedding loss
         if self.embedding_weight > 0:
             embed_loss = 0
             if self.criterion_type == 'fro':
-                embed_loss += torch.norm(x_embedding - gt_embedding, p='fro')
+                embed_loss += torch.norm(x_embedding - gt_embedding, p='fro').detach()
             else:
                 embed_loss += self.criterion(x_embedding, gt_embedding)
             embed_loss *= self.embedding_weight
