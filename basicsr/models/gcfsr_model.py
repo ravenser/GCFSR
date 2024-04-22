@@ -84,6 +84,11 @@ class GCFSR_Model(BaseModel):
         else:
             self.cri_perceptual = None
 
+        if train_opt.get('embedding_opt'):
+            self.cri_embedding = build_loss(train_opt['embedding_opt']).to(self.device)
+        else:
+            self.cri_embedding = None
+
         # regularization weights 
         self.r1_reg_weight = train_opt['r1_reg_weight']  # for discriminator
         self.path_reg_weight = train_opt['path_reg_weight']  # for generator
