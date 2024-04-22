@@ -4,6 +4,7 @@ from torch import autograd as autograd
 from torch import nn as nn
 from torch.nn import functional as F
 
+from facenet_pytorch import InceptionResnetV1
 from basicsr.archs.vgg_arch import VGGFeatureExtractor
 from basicsr.utils.registry import LOSS_REGISTRY
 from .loss_util import weighted_loss
@@ -255,6 +256,63 @@ class PerceptualLoss(nn.Module):
         features_t = features.transpose(1, 2)
         gram = features.bmm(features_t) / (c * h * w)
         return gram
+
+@LOSS_REGISTRY.register()
+class EmbeddingLoss(nn.Module):
+    """Embedding loss.
+
+    Args:
+        Pretrained (str): The type of vgg network used as feature extractor.
+            Default: 'vgg19'.
+        embedding_weight (float): If `embedding_weight > 0`, the embedding
+            loss will be calculated and the loss will multiplied by the
+            weight. Default: 1.0.
+        criterion (str): Criterion used for perceptual loss. Default: 'l1'.
+    """
+
+    def __init__(self,
+                 pretrained = 'vggface2',
+                 embedding_weight=1.0,
+                 criterion='l1'):
+        super(EmbeddingLoss, self).__init__()
+        self.pretrained = pretrained
+        self.embedding_weight = embedding_weight
+        self.resnet = InceptionResnetV1(pretrained = pretrained).eval()          
+        self.criterion_type = criterion
+        if self.criterion_type == 'l1':
+            self.criterion = torch.nn.L1Loss()
+        elif self.criterion_type == 'l2':
+            self.criterion = torch.nn.L2loss()
+        elif self.criterion_type == 'fro':
+            self.criterion = None
+        else:
+            raise NotImplementedError(f'{criterion} criterion has not been supported.')
+
+    def forward(self, x, gt):
+        """Forward function.
+
+        Args:
+            x (Tensor): Input tensor with shape (n, c, h, w).
+            gt (Tensor): Ground-truth tensor with shape (n, c, h, w).
+
+        Returns:
+            Tensor: Forward results.
+        """
+        # extract vgg features
+        x_embedding = self.resnet(x)
+        gt_embedding = self.resnet(gt.detach())
+
+        # calculate perceptual loss
+        if self.embedding_weight > 0:
+            embed_loss = 0
+            if self.criterion_type == 'fro':
+                embed_loss += torch.norm(x_embedding - gt_embedding, p='fro')
+            else:
+                embed_loss += self.criterion(x_embedding, gt_embedding)
+            embed_loss *= self.embedding_weight
+        else:
+            embed_loss = None
+        return embed_loss
 
 
 @LOSS_REGISTRY.register()

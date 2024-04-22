@@ -101,6 +101,12 @@ train:
     perceptual_weight: !!float 1e-2
     style_weight: 0
     criterion: l1
+  
+  embedding_opt:
+    type: EmbeddingLoss
+    pretrained: vggface2
+    embedding_weight: !!float 1e-2
+    criterion: l1
 
   # r1 regularization for discriminator
   r1_reg_weight: 10

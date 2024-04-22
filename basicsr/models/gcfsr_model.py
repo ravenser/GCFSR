@@ -274,7 +274,13 @@ class GCFSR_Model(BaseModel):
             if l_g_style is not None:
                 l_g += l_g_style
                 loss_dict['l_g_style'] = l_g_style
-
+        
+        if self.cri_embedding:
+            l_g_embed = self.cri_embedding(fake_img, self.real_img)
+            if l_g_embed is not None:
+                l_g += l_g_embed
+                loss_dict['l_g_embed'] = l_g_embed
+        
         l_g.backward()
 
         self.optimizer_g.step()
