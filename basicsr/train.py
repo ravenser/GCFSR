@@ -19,11 +19,11 @@ def init_tb_loggers(opt):
     if (opt['logger'].get('wandb') is not None) and (opt['logger']['wandb'].get('project')
                                                      is not None) and ('debug' not in opt['name']):
         assert opt['logger'].get('use_tb_logger') is True, ('should turn on tensorboard when using wandb')
-        init_wandb_logger(opt)
+        run = init_wandb_logger(opt)
     tb_logger = None
     if opt['logger'].get('use_tb_logger') and 'debug' not in opt['name']:
         tb_logger = init_tb_logger(log_dir=osp.join(opt['root_path'], 'tb_logger', opt['name']))
-    return tb_logger
+    return tb_logger, run
 
 
 def create_train_val_dataloader(opt, logger):
@@ -95,7 +95,8 @@ def train_pipeline(root_path):
 
     torch.backends.cudnn.benchmark = True
     # torch.backends.cudnn.deterministic = True
-
+    # initialize wandb and tb loggers
+    tb_logger, run = init_tb_loggers(opt)
     # load resume states if necessary
     resume_state = load_resume_state(opt)
     # mkdir for experiments and logger
@@ -110,8 +111,6 @@ def train_pipeline(root_path):
     logger = get_root_logger(logger_name='basicsr', log_level=logging.INFO, log_file=log_file)
     logger.info(get_env_info())
     logger.info(dict2str(opt))
-    # initialize wandb and tb loggers
-    tb_logger = init_tb_loggers(opt)
 
     # create train and validation dataloaders
     result = create_train_val_dataloader(opt, logger)
@@ -177,7 +176,7 @@ def train_pipeline(root_path):
             # save models and training states
             if current_iter % opt['logger']['save_checkpoint_freq'] == 0:
                 logger.info('Saving models and training states.')
-                model.save(epoch, current_iter)
+                model.save(epoch, current_iter, run)
 
             # validation
             if opt.get('val') is not None and (current_iter % opt['val']['val_freq'] == 0):
@@ -193,7 +192,7 @@ def train_pipeline(root_path):
     consumed_time = str(datetime.timedelta(seconds=int(time.time() - start_time)))
     logger.info(f'End of training. Time consumed: {consumed_time}')
     logger.info('Save the latest model.')
-    model.save(epoch=-1, current_iter=-1)  # -1 stands for the latest
+    model.save(epoch=-1, current_iter=-1, run = run)  # -1 stands for the latest
     if opt.get('val') is not None:
         model.validation(val_loader, current_iter, tb_logger, opt['val']['save_img'])
     if tb_logger:

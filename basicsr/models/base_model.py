@@ -1,6 +1,7 @@
 import os
 import time
 import torch
+import wandb
 from collections import OrderedDict
 from copy import deepcopy
 from torch.nn.parallel import DataParallel, DistributedDataParallel
@@ -168,7 +169,7 @@ class BaseModel():
         return [param_group['lr'] for param_group in self.optimizers[0].param_groups]
 
     @master_only
-    def save_network(self, net, net_label, current_iter, param_key='params'):
+    def save_network(self, net, net_label, current_iter, run, param_key='params'):
         """Save networks.
 
         Args:
@@ -205,6 +206,18 @@ class BaseModel():
             except Exception as e:
                 logger = get_root_logger()
                 logger.warn(f'Save model error: {e}, remaining retry times: {retry - 1}')
+                time.sleep(1)
+            else:
+                break
+            finally:
+                retry -= 1
+            try:
+                artifact = wandb.Artifact(save_filename, type='model')
+                artifact.add_file(save_path)
+                run.log_artifact(artifact)
+            except Exception as e:
+                logger = get_root_logger()
+                logger.warn(f'Save artifact model error: {e}, remaining retry times: {retry - 1}')
                 time.sleep(1)
             else:
                 break
@@ -278,7 +291,7 @@ class BaseModel():
         net.load_state_dict(load_net, strict=strict)
 
     @master_only
-    def save_training_state(self, epoch, current_iter):
+    def save_training_state(self, epoch, current_iter, run):
         """Save training states during training, which will be used for
         resuming.
 
@@ -303,6 +316,18 @@ class BaseModel():
                 except Exception as e:
                     logger = get_root_logger()
                     logger.warn(f'Save training state error: {e}, remaining retry times: {retry - 1}')
+                    time.sleep(1)
+                else:
+                    break
+                finally:
+                    retry -= 1
+                try:
+                    artifact = wandb.Artifact(save_filename, type='state')
+                    artifact.add_file(save_path)
+                    run.log_artifact(artifact)
+                except Exception as e:
+                    logger = get_root_logger()
+                    logger.warn(f'Save wandb training state error: {e}, remaining retry times: {retry - 1}')
                     time.sleep(1)
                 else:
                     break
