@@ -24,7 +24,7 @@ datasets:
     use_shuffle: true
     num_worker_per_gpu: 4
     batch_size_per_gpu: 6
-    dataset_enlarge_ratio: 100
+    dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
   val:
@@ -130,7 +130,7 @@ val:
 # logging settings
 logger:
   print_freq: 50
-  save_checkpoint_freq: 1001
+  save_checkpoint_freq: 1000
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512

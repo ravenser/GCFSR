@@ -212,6 +212,7 @@ class BaseModel():
             finally:
                 retry -= 1
             try:
+                print('Save model????????????')
                 artifact = wandb.Artifact(save_filename, type='model')
                 artifact.add_file(save_path)
                 run.log_artifact(artifact)
