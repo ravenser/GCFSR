@@ -320,8 +320,7 @@ class GCFSR_Model(BaseModel):
             self.feed_data(val_data)
 
             self.test()
-            visuals = self.get_current_visuals()
-            sr_img = tensor2img([visuals['sr']], min_max=(-1, 1))
+            sr_img = self.output
             lq_img = tensor2img([self.lq.detach().cpu()], min_max=(-1, 1))
             gt_img = tensor2img([self.real_img.detach().cpu()], min_max=(-1, 1))
             # tentative for out of GPU memory
