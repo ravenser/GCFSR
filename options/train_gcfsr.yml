@@ -135,7 +135,7 @@ logger:
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512
-    resume_id: 14pvpnku
+    resume_id: ~
 
 
 # dist training settings
