@@ -32,7 +32,6 @@ class SingleImage_GT_Dataset(data.Dataset):
     def __init__(self, opt):
         super(SingleImage_GT_Dataset, self).__init__()
         self.opt = opt
-        self.in_size = 32
         # file client (io backend)
         self.file_client = None
         self.io_backend_opt = opt['io_backend']
@@ -41,6 +40,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         self.lq_folder = opt['dataroot_lq']
         self.cond_norm = opt['cond_norm']
         self.out_size = opt['out_size']
+        self.downsample_list = opt['downsample_list']
         if self.io_backend_opt['type'] == 'lmdb':
             self.io_backend_opt['db_paths'] = [self.lq_folder]
             self.io_backend_opt['client_keys'] = ['lq']
@@ -59,9 +59,11 @@ class SingleImage_GT_Dataset(data.Dataset):
         lq_path = self.paths[index]
         img_lq = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
         img_gt = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
-        scale = self.out_size / self.in_size
+        scale_ind = np.random.randint(len(self.downsample_list))
+        scale = self.downsample_list[scale_ind]
+        img_lq = imresize(img_gt, 1/scale)
         img_lq = imresize(img_lq, scale)
-
+    
         # TODO: color space transform
         # BGR to RGB, HWC to CHW, numpy to tensor
         img_lq = img2tensor(img_lq, bgr2rgb=True, float32=True)

@@ -298,7 +298,7 @@ class GCFSR_Model(BaseModel):
     def test(self):
         with torch.no_grad():
             self.net_g_ema.eval()
-            self.output, _ = self.net_g_ema(self.lq)
+            self.output, _ = self.net_g_ema(self.lq, self.in_size)
             self.output = self.output.data.squeeze().float().cpu().clamp_(-1, 1).numpy()
             self.output = (self.output + 1) / 2
             self.output = np.transpose(self.output[[2, 1, 0], :, :], (1, 2, 0))
