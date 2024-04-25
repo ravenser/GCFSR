@@ -17,7 +17,7 @@ from basicsr.losses.losses import g_path_regularize, r1_penalty
 from basicsr.utils import imwrite, tensor2img
 from basicsr.utils.registry import MODEL_REGISTRY
 from .base_model import BaseModel
-
+from basicsr.metrics import calculate_psnr, calculate_ssim, calculate_niqe
 
 @MODEL_REGISTRY.register()
 class GCFSR_Model(BaseModel):
@@ -310,6 +310,7 @@ class GCFSR_Model(BaseModel):
             self.nondist_validation(dataloader, current_iter, tb_logger, save_img)
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
+        import wandb
         dataset_name = dataloader.dataset.opt['name']
         pbar = tqdm(total=len(dataloader), unit='image')
 
@@ -320,10 +321,10 @@ class GCFSR_Model(BaseModel):
             self.feed_data(val_data)
 
             self.test()
-
             visuals = self.get_current_visuals()
             sr_img = tensor2img([visuals['sr']], min_max=(-1, 1))
-
+            lq_img = tensor2img([self.lq.detach().cpu()], min_max=(-1, 1))
+            gt_img = tensor2img([self.real_img.detach().cpu()], min_max=(-1, 1))
             # tentative for out of GPU memory
             del self.output
             torch.cuda.empty_cache()
@@ -339,9 +340,23 @@ class GCFSR_Model(BaseModel):
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
                                                 f'{img_name}_{self.opt["name"]}.png')
                 imwrite(sr_img, save_img_path)
-
+            if wandb.run is None:
+                print("Weights & Biases (wandb) is not initialized.")
+                wandb.log({
+                "Ground Truth": wandb.Image(gt_img, caption="Ground Truth"),
+                "Super Resolution": wandb.Image(sr_img, caption="Super Resolution"),
+                "Low Quality": wandb.Image(lq_img, caption="Low Quality")
+                })
+                wandb.log({
+                    "PSNR": calculate_psnr(sr_img, gt_img, 0),
+                    "SSIM": calculate_ssim(sr_img, gt_img, 0),
+                    "NIQ" : calculate_niqe(sr_img,0)
+                })
             # tentative for out of GPU memory
             del self.lq
+            del sr_img
+            del lq_img
+            del gt_img
             torch.cuda.empty_cache()
 
             pbar.update(1)
