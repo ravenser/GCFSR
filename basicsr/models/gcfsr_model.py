@@ -340,8 +340,7 @@ class GCFSR_Model(BaseModel):
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
                                                 f'{img_name}_{self.opt["name"]}.png')
                 imwrite(sr_img, save_img_path)
-            if wandb.run is None:
-                print("Weights & Biases (wandb) is not initialized.")
+            if wandb.run is not None:
                 wandb.log({
                 "Ground Truth": wandb.Image(gt_img, caption="Ground Truth"),
                 "Super Resolution": wandb.Image(sr_img, caption="Super Resolution"),
@@ -352,6 +351,9 @@ class GCFSR_Model(BaseModel):
                     "SSIM": calculate_ssim(sr_img, gt_img, 0),
                     "NIQ" : calculate_niqe(sr_img,0)
                 })
+            else:
+                print("Weights & Biases (wandb) is not initialized.")
+                
             # tentative for out of GPU memory
             del self.lq
             del sr_img
