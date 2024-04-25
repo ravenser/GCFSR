@@ -60,7 +60,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         lq_path = self.paths[index]
         img_bytes = self.file_client.get(lq_path, 'lq')
         img_lq = imfrombytes(img_bytes, float32=True)
-
+        img_gt = imfrombytes(img_bytes, float32=True)
         in_size = img_lq.shape[1]
         scale = self.out_size / in_size
         img_lq = imresize(img_lq, scale)
@@ -68,7 +68,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         # TODO: color space transform
         # BGR to RGB, HWC to CHW, numpy to tensor
         img_lq = img2tensor(img_lq, bgr2rgb=True, float32=True)
-        
+        img_gt = img2tensor(img_gt, bgr2rgb=True, float32=True)
         img_lq = torch.clamp((img_lq * 255.0).round(), 0, 255) / 255.
 
         in_size = scale / self.cond_norm
@@ -77,7 +77,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         # normalize
         if self.mean is not None or self.std is not None:
             normalize(img_lq, self.mean, self.std, inplace=True)
-        return {'lq': img_lq, 'lq_path': lq_path, 'in_size': cond}
+        return {'lq': img_lq, 'lq_path': lq_path, 'in_size': cond, 'gt': img_gt}
 
     def __len__(self):
         return len(self.paths)
