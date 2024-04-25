@@ -38,7 +38,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         self.mean = opt['mean'] if 'mean' in opt else None
         self.std = opt['std'] if 'std' in opt else None
         self.lq_folder = opt['dataroot_lq']
-
+        self.in_size = opt['val']['in_size']
         self.cond_norm = opt['cond_norm']
         self.out_size = opt['out_size']
 
@@ -58,11 +58,9 @@ class SingleImage_GT_Dataset(data.Dataset):
 
         # load lq image
         lq_path = self.paths[index]
-        img_bytes = self.file_client.get(lq_path, 'lq')
-        img_lq = imfrombytes(img_bytes, float32=True)
-        img_gt = imfrombytes(img_bytes, float32=True)
-        in_size = img_lq.shape[1]
-        scale = self.out_size / in_size
+        img_lq = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
+        img_gt = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
+        scale = self.out_size / self.in_size
         img_lq = imresize(img_lq, scale)
 
         # TODO: color space transform

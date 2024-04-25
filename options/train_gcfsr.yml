@@ -33,7 +33,8 @@ datasets:
     name: validation
     type: SingleImage_GT_Dataset
     dataroot_lq: /kaggle/input/celeba-512-1000-val/celebaHQ_512_1000
-    out_size: 512
+    out_size: 32
+    in_size: 512
     io_backend:
       type: disk
     cond_norm: 16.
