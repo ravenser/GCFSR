@@ -324,7 +324,7 @@ class GCFSR_Model(BaseModel):
             visuals = self.get_current_visuals()
             sr_img = tensor2img([visuals['sr']], min_max=(-1, 1))
             lq_img = tensor2img([self.lq.detach().cpu()], min_max=(-1, 1))
-            gt_img = tensor2img([self.real_img.detach().cpu()], min_max=(-1, 1))
+            gt_img = tensor2img([visuals['gt']], min_max=(-1, 1))
             # tentative for out of GPU memory
             del self.output
             torch.cuda.empty_cache()
