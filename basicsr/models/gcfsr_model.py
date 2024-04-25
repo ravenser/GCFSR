@@ -300,9 +300,7 @@ class GCFSR_Model(BaseModel):
             self.net_g_ema.eval()
             self.output, _ = self.net_g_ema(self.lq, self.in_size)
             self.output = self.output.data.squeeze().float().cpu().clamp_(-1, 1).numpy()
-            self.output = (self.output + 1) / 2
-            self.output = np.transpose(self.output[[2, 1, 0], :, :], (1, 2, 0))
-            self.output = (self.output * 255.0).round().astype(np.uint8)
+
 
     def dist_validation(self, dataloader, current_iter, tb_logger, save_img):
         if self.opt['rank'] == 0:
@@ -321,8 +319,8 @@ class GCFSR_Model(BaseModel):
 
             self.test()
             sr_img = self.output
-            lq_img = tensor2img([self.lq.detach().cpu()], min_max=(-1, 1))
-            gt_img = tensor2img([self.real_img.detach().cpu()], min_max=(-1, 1))
+            lq_img = tensor2img([self.lq.detach().cpu(), False], min_max=(-1, 1))
+            gt_img = tensor2img([self.real_img.detach().cpu(), False], min_max=(-1, 1))
             # tentative for out of GPU memory
             del self.output
             torch.cuda.empty_cache()
