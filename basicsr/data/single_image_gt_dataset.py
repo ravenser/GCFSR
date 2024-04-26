@@ -61,7 +61,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         img_gt = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
         scale_ind = np.random.randint(len(self.downsample_list))
         scale = self.downsample_list[scale_ind]
-        img_lq = imresize(img_gt, 1/scale)
+        img_lq = imresize(img_lq, 1/scale)
         img_lq = imresize(img_lq, scale)
     
         # TODO: color space transform
@@ -72,10 +72,6 @@ class SingleImage_GT_Dataset(data.Dataset):
         img_gt = torch.clamp((img_gt * 255.0).round(), 0, 255) / 255.
         in_size = scale / self.cond_norm
         cond = torch.from_numpy(np.array([in_size], dtype=np.float32)) 
-        
-        # normalize
-        if self.mean is not None or self.std is not None:
-            normalize(img_lq, self.mean, self.std, inplace=True)
         return {'lq': img_lq, 'lq_path': lq_path, 'in_size': cond, 'gt': img_gt}
 
     def __len__(self):
