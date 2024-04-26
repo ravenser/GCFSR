@@ -59,8 +59,6 @@ class SingleImage_GT_Dataset(data.Dataset):
         lq_path = self.paths[index]
         img_lq = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
         img_gt = cv2.imread(lq_path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
-        img_lq = cv2.cvtColor(img_lq, cv2.COLOR_BGR2RGB)
-        img_gt = cv2.cvtColor(img_gt, cv2.COLOR_BGR2RGB)
         scale_ind = np.random.randint(len(self.downsample_list))
         scale = self.downsample_list[scale_ind]
         img_lq = imresize(img_gt, 1/scale)
@@ -71,7 +69,7 @@ class SingleImage_GT_Dataset(data.Dataset):
         img_lq = img2tensor(img_lq, bgr2rgb=False, float32=True)
         img_gt = img2tensor(img_gt, bgr2rgb=False, float32=True)
         img_lq = torch.clamp((img_lq * 255.0).round(), 0, 255) / 255.
-
+        img_gt = torch.clamp((img_gt * 255.0).round(), 0, 255) / 255.
         in_size = scale / self.cond_norm
         cond = torch.from_numpy(np.array([in_size], dtype=np.float32)) 
         

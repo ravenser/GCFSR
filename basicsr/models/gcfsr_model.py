@@ -299,7 +299,7 @@ class GCFSR_Model(BaseModel):
         with torch.no_grad():
             self.net_g_ema.eval()
             self.output, _ = self.net_g_ema(self.lq, self.in_size)
-            self.output = self.output.data.squeeze().float().cpu().clamp_(-1, 1).numpy()
+            #self.output = self.output.data.squeeze().float().cpu().clamp_(-1, 1).numpy()
 
 
     def dist_validation(self, dataloader, current_iter, tb_logger, save_img):
@@ -318,11 +318,13 @@ class GCFSR_Model(BaseModel):
             self.feed_data(val_data)
 
             self.test()
-            sr_img = self.output
-            lq_img = tensor2img([self.lq.detach().cpu(), False], min_max=(-1, 1))
-            gt_img = tensor2img([self.real_img.detach().cpu(), False], min_max=(-1, 1))
+            sr_img = cv2.cvtColor(tensor2img([self.output.detach().cpu()], False, np.uint8),cv2.COLOR_BGR2RGB)
+            lq_img = cv2.cvtColor(tensor2img([self.lq.detach().cpu()], False, np.uint8),cv2.COLOR_BGR2RGB)
+            gt_img = cv2.cvtColor(tensor2img([self.real_img.detach().cpu()], False, np.uint8),cv2.COLOR_BGR2RGB)
             # tentative for out of GPU memory
             del self.output
+            del self.lq
+            del self.real_img
             torch.cuda.empty_cache()
 
             if save_img:
@@ -351,7 +353,7 @@ class GCFSR_Model(BaseModel):
                 print("Weights & Biases (wandb) is not initialized.")
                 
             # tentative for out of GPU memory
-            del self.lq
+
             del sr_img
             del lq_img
             del gt_img
