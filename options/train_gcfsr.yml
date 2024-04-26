@@ -134,7 +134,7 @@ logger:
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512
-    resume_id: ~
+    resume_id: 14pvpnku
     modelgpath: "ravenser/gcfsr_base_512/net_d_19001.pth:v0"
     modeldpath: "ravenser/gcfsr_base_512/net_g_19001.pth:v0"
     statepath: "ravenser/gcfsr_base_512/19001.state:v0"
