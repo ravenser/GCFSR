@@ -3,6 +3,7 @@ import logging
 import math
 import time
 import torch
+import wandb
 from os import path as osp
 
 from basicsr.data import build_dataloader, build_dataset
@@ -68,7 +69,19 @@ def create_train_val_dataloader(opt, logger):
 def load_resume_state(opt):
     resume_state_path = None
     if opt['auto_resume']:
-        state_path = osp.join('experiments', opt['name'], 'training_states')
+        make_exp_dirs(opt)
+        if (opt['logger'].get('wandb') is not None) and (opt['logger']['wandb'].get('project')
+                                                     is not None) and ('debug' not in opt['name']):
+            model_path = osp.join('experiments', opt['name'], 'models')
+            state_path = osp.join('experiments', opt['name'], 'training_states')
+            api = wandb.Api()
+            artifact = api.artifact(opt['logger']['wandb']['modelgpath'])
+            artifact.download(root = model_path)
+            artifact = api.artifact(opt['logger']['wandb']['modeldpath'])
+            artifact.download(root = model_path)
+            artifact = api.artifact(opt['logger']['wandb']['statepath'])
+            artifact.download(root = state_path)
+            wandb.finish()
         if osp.isdir(state_path):
             states = list(scandir(state_path, suffix='state', recursive=False, full_path=False))
             if len(states) != 0:
