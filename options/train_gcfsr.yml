@@ -74,7 +74,7 @@ train:
 
   scheduler:
     type: MultiStepLR
-    milestones: [800000]
+    milestones: [60000]
     gamma: 0.5
 
   total_iter: 80000
@@ -130,14 +130,14 @@ val:
 # logging settings
 logger:
   print_freq: 50
-  save_checkpoint_freq: 4000
+  save_checkpoint_freq: 2500
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512
     resume_id: 14pvpnku
-    modelgpath: "ravenser/gcfsr_base_512/net_d_19001.pth:v0"
-    modeldpath: "ravenser/gcfsr_base_512/net_g_19001.pth:v0"
-    statepath: "ravenser/gcfsr_base_512/19001.state:v0"
+    modelgpath: "ravenser/gcfsr_base_512/net_g_40001.pth:v0"
+    modeldpath: "ravenser/gcfsr_base_512/net_d_40001.pth:v0"
+    statepath: "ravenser/gcfsr_base_512/40001.state:v0"
 
 
 # dist training settings
