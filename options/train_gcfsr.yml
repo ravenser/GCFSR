@@ -125,19 +125,20 @@ train:
 val:
   val_freq: 5000
   save_img: true
-  num_val_samples: 3
+  num_val_samples: 1
 
 # logging settings
 logger:
   print_freq: 50
-  save_checkpoint_freq: 2500
+  save_checkpoint_freq: 5000
   use_tb_logger: true
   wandb:
     project: gcfsr_base_512
-    resume_id: 14pvpnku
-    modelgpath: "ravenser/gcfsr_base_512/net_g_62501.pth:v0"
-    modeldpath: "ravenser/gcfsr_base_512/net_d_62501.pth:v0"
-    statepath: "ravenser/gcfsr_base_512/62501.state:v0"
+    #resume_id: 14pvpnku
+    resume_id: ~
+    modelgpath: "ravenser/gcfsr_base_512/net_g_87501.pth:v0"
+    modeldpath: "ravenser/gcfsr_base_512/net_d_87501.pth:v0"
+    statepath: "ravenser/gcfsr_base_512/87501.state:v0"
 
 
 # dist training settings
