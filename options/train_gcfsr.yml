@@ -125,7 +125,7 @@ train:
 
 # validation settings
 val:
-  val_freq: 5000
+  val_freq: 10000
   save_img: true
   num_val_samples: 1
 
@@ -137,7 +137,7 @@ logger:
   wandb:
     project: gcfsr_base_512
     #resume_id: 14pvpnku
-    resume_id: ~
+    resume_id: 14pvpnku
     modelgpath: "ravenser/gcfsr_base_512/net_g_87501.pth:v0"
     modeldpath: "ravenser/gcfsr_base_512/net_d_87501.pth:v0"
     statepath: "ravenser/gcfsr_base_512/87501.state:v0"
