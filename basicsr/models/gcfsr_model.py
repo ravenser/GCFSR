@@ -79,7 +79,7 @@ class GCFSR_Model(BaseModel):
         else:
             self.cri_pix = None
 
-        if train_opt.get('perceptual_opt'):
+        if train_opt.get('perceptual_opt') and train_opt['blind']:
             self.cri_perceptual = build_loss(train_opt['perceptual_opt']).to(self.device)
         else:
             self.cri_perceptual = None
@@ -268,7 +268,8 @@ class GCFSR_Model(BaseModel):
 
         if self.cri_pix: 
             l_g_pix = self.cri_pix(fake_img, self.real_img)
-            l_g += l_g_pix
+            if self.opt['train']['blind']: 
+                l_g += l_g_pix
             loss_dict['l_g_pix'] = l_g_pix
 
         if self.cri_perceptual:

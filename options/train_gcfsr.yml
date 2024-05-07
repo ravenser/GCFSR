@@ -23,7 +23,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 4
-    batch_size_per_gpu: 8
+    batch_size_per_gpu: 10
     dataset_enlarge_ratio: 2
     prefetch_mode: ~
 
@@ -108,6 +108,8 @@ train:
     embedding_weight: !!float 1e-1
     criterion: l1
 
+  #Blind SR or Not
+  blind: 1
   # r1 regularization for discriminator
   r1_reg_weight: 10
   # path length regularization for generator
