@@ -74,7 +74,7 @@ train:
 
   scheduler:
     type: MultiStepLR
-    milestones: [60000]
+    milestones: [60000, 160000]
     gamma: 0.5
 
   total_iter: 300000
@@ -138,9 +138,9 @@ logger:
     project: gcfsr_base_512
     #resume_id: 14pvpnku
     resume_id: 14pvpnku
-    modelgpath: "ravenser/gcfsr_base_512/net_g_87501.pth:v0"
-    modeldpath: "ravenser/gcfsr_base_512/net_d_87501.pth:v0"
-    statepath: "ravenser/gcfsr_base_512/87501.state:v0"
+    modelgpath: "ravenser/gcfsr_base_512/net_g_115001.pth:v0"
+    modeldpath: "ravenser/gcfsr_base_512/net_d_115001.pth:v0"
+    statepath: "ravenser/gcfsr_base_512/115001.state:v0"
 
 
 # dist training settings
