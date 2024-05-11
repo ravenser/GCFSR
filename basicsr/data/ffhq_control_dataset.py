@@ -13,6 +13,7 @@ from basicsr.utils import FileClient, get_root_logger, imfrombytes, img2tensor
 from basicsr.utils.registry import DATASET_REGISTRY
 from basicsr.utils.matlab_functions import imresize
 
+
 @DATASET_REGISTRY.register()
 class FFHQ_control_Dataset(data.Dataset):
 
@@ -26,6 +27,13 @@ class FFHQ_control_Dataset(data.Dataset):
         self.gt_folder = opt['dataroot_gt']
         self.mean = opt['mean'] if 'mean' in opt else None
         self.std = opt['std'] if 'std' in opt else None
+        self.kernel_list = opt['kernel_list']
+        self.kernel_prob = opt['kernel_prob']
+        self.degrad_prob = opt['probab']
+
+        # color jitter
+        self.color_jitter_prob = opt.get('color_jitter_prob')
+        self.color_jitter_shift = opt.get('color_jitter_shift', 20)
 
         if self.io_backend_opt['type'] == 'lmdb':
             self.io_backend_opt['db_paths'] = self.gt_folder
@@ -42,10 +50,20 @@ class FFHQ_control_Dataset(data.Dataset):
 
         logger = get_root_logger()
 
+    @staticmethod
+    def color_jitter(img, shift):
+        """jitter color: randomly jitter the RGB values, in numpy formats"""
+        jitter_val = np.random.uniform(-shift, shift, 3).astype(np.float32)
+        img = img + jitter_val
+        img = np.clip(img, 0, 1)
+        return img
+    
     def __getitem__(self, index):
         if self.file_client is None:
             self.file_client = FileClient(self.io_backend_opt.pop('type'), **self.io_backend_opt)
-
+        degrad_flag = False
+        if np.random.uniform() < self.degrad_prob:
+            degrad_flag = True
         # load gt image
         gt_path = self.paths[index]
         img_bytes = self.file_client.get(gt_path)
@@ -55,11 +73,23 @@ class FFHQ_control_Dataset(data.Dataset):
         img_gt, status = augment(img_gt, hflip=self.opt['use_hflip'], rotation=False, return_status=True)
         h, w, _ = img_gt.shape
         # ------------------------ generate lq image ------------------------ #
+        if degrad_flag:
+            kernel = degradations.random_mixed_kernels(
+                self.kernel_list,
+                self.kernel_prob)
+            img_lq = cv2.filter2D(img_gt, -1, kernel)
+        
         scale_ind = np.random.randint(len(self.downsample_list))
         scale = self.downsample_list[scale_ind]
         img_lq = imresize(img_gt, 1/scale)
+        if degrad_flag:
+            # noise
+            img_lq = degradations.random_add_gaussian_noise(img_lq)
+            # jpeg compression
+            img_lq = degradations.random_add_jpg_compression(img_lq)
         img_lq = imresize(img_lq, scale)
-        
+        if self.color_jitter_prob is not None and (np.random.uniform() < self.color_jitter_prob):
+            img_lq = self.color_jitter(img_lq, self.color_jitter_shift)
         # BGR to RGB, HWC to CHW, numpy to tensor
         img_gt, img_lq = img2tensor([img_gt, img_lq], bgr2rgb=True, float32=True)
 
