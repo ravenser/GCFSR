@@ -766,6 +766,6 @@ def random_add_jpg_compression(img, quality_range=[60, 100], return_q=False):
     """
     quality = np.random.uniform(quality_range[0], quality_range[1])
     if return_q:
-        return add_jpg_compression(img, quality), quality
+        return add_jpg_compression(img, quality)
     else:
-        return add_jpg_compression(img, quality), None
+        return add_jpg_compression(img, quality)
