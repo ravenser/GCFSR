@@ -326,7 +326,7 @@ def random_bivariate_plateau(kernel_size,
 
 def random_mixed_kernels(kernel_list,
                          kernel_prob,
-                         kernel_size=21,
+                         kernel_size=41,
                          sigma_x_range=[0.6, 5],
                          sigma_y_range=[0.6, 5],
                          rotation_range=[-math.pi, math.pi],

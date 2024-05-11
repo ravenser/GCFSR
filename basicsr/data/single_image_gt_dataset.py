@@ -95,10 +95,8 @@ class SingleImage_GT_Dataset(data.Dataset):
             img_lq = self.color_jitter(img_lq, self.color_jitter_shift)
 
         # BGR to RGB, HWC to CHW, numpy to tensor
-        #img_lq = img2tensor(img_lq, bgr2rgb=False, float32=True)
-        #img_gt = img2tensor(img_gt, bgr2rgb=False, float32=True)
-        img_lq = torch.from_numpy(np.transpose(img_lq[:, :, [2, 1, 0]], (2, 0, 1))).float()
-        img_gt = torch.from_numpy(np.transpose(img_gt[:, :, [2, 1, 0]], (2, 0, 1))).float()
+        img_lq = img2tensor(img_lq, bgr2rgb=False, float32=True)
+        img_gt = img2tensor(img_gt, bgr2rgb=False, float32=True)
         img_lq = torch.clamp((img_lq * 255.0).round(), 0, 255) / 255.
         img_gt = torch.clamp((img_gt * 255.0).round(), 0, 255) / 255.
         in_size = scale / self.cond_norm
