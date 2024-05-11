@@ -13,7 +13,7 @@ datasets:
     io_backend:
       type: disk
     
-    downsample_list: [16, 16, 16, 16, 8, 8, 4, 4, 2, 2]
+    downsample_list: [16, 16, 8, 8, 8, 4, 4, 4, 2, 2, 2]
     cond_norm: 16.
 
     use_hflip: true
