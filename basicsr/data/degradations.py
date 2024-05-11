@@ -534,10 +534,7 @@ def random_add_gaussian_noise(img, sigma_range=(0, 1.0), gray_prob=0, clip=True,
         out = np.clip(out, 0, 1)
     elif rounds:
         out = (out * 255.0).round() / 255.
-    if sigma is not None:
-        return out, sigma
-    else:
-        return out, None
+    return out
 
 
 def random_generate_gaussian_noise_pt(img, sigma_range=(0, 10), gray_prob=0):
@@ -754,7 +751,7 @@ def add_jpg_compression(img, quality=90):
     return img
 
 
-def random_add_jpg_compression(img, quality_range=(90, 100), return_q=False):
+def random_add_jpg_compression(img, quality_range=[60, 100], return_q=False):
     """Randomly add JPG compression artifacts.
 
     Args:
