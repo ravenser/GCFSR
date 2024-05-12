@@ -126,7 +126,7 @@ train:
   embedding_opt:
     type: EmbeddingLoss
     pretrained: vggface2
-    embedding_weight: !!float 1e-2
+    embedding_weight: !!float 1e-1
     criterion: l1
 
   #Blind SR or Not
@@ -159,9 +159,9 @@ logger:
     project: gcfsr_base_512
     #resume_id: 14pvpnku
     resume_id: axa2nj6l
-    modelgpath: "ravenser/gcfsr_base_512/net_g_175001.pth:v0"
-    modeldpath: "ravenser/gcfsr_base_512/net_d_175001.pth:v0"
-    statepath: "ravenser/gcfsr_base_512/175001.state:v0"
+    modelgpath: "ravenser/gcfsr_base_512/net_g_180001.pth:v0"
+    modeldpath: "ravenser/gcfsr_base_512/net_d_180001.pth:v0"
+    statepath: "ravenser/gcfsr_base_512/180001.state:v0"
 
 
 # dist training settings
